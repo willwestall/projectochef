@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projecto Chef | Smart Cookbook Projector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --white: #FFFFFF;
+            --orange: #FF8C42;
+            --dark-orange: #E67A2E;
+            --charcoal: #2B2B2B;
+            --light-gray: #F9F9F9;
+            --shadow: rgba(255, 140, 66, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--white);
+            color: var(--charcoal);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--white);
+            padding: 1.2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .menu-toggle .line {
+            width: 30px;
+            height: 3px;
+            background: var(--orange);
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+
+        @media (max-width: 968px) {
+            .menu-toggle {
+                display: flex;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                position: fixed;
+                top: 80px;
+                right: -100%;
+                width: 300px;
+                background: var(--white);
+                padding: 2rem;
+                box-shadow: -5px 0 30px rgba(0, 0, 0, 0.1);
+                transition: right 0.3s;
+                height: calc(100vh - 80px);
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .nav-links li {
+                margin-bottom: 0.5rem;
+            }
+
+            .nav-links li a {
+                display: block;
+                padding: 1rem 1.5rem;
+            }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            list-style: none;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: var(--charcoal);
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.8rem 1.8rem;
+            transition: all 0.3s;
+            border-radius: 8px;
+            cursor: pointer;
+            display: block;
+        }
+
+        .nav-links li a:hover,
+        .nav-links li a.active {
+            background: var(--orange);
+            color: var(--white);
+        }
+
+        /* Page Sections */
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding-top: 90px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Home Page */
+        .home-hero {
+            padding: 6rem 5% 4rem;
+            background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
+        }
+
+        .home-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .home-text h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: var(--charcoal);
+        }
+
+        .home-text .highlight {
+            color: var(--orange);
+            display: block;
+        }
+
+        .home-text p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 2.5rem;
+            color: rgba(43, 43, 43, 0.8);
+        }
+
+        .home-image {
+            text-align: center;
+        }
+
+        .home-image img {
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.15));
+        }
+
+        .btn-primary {
+            background: var(--orange);
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px var(--shadow);
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background: var(--dark-orange);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px var(--shadow);
+        }
+
+        /* Features Section on Home */
+        .features {
+            padding: 6rem 5%;
+            background: var(--white);
+        }
+
+        .features h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 4rem;
+            color: var(--charcoal);
+        }
+
+        .features-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+        }
+
+        .feature-card {
+            background: var(--light-gray);
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(255, 140, 66, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--charcoal);
+        }
+
+        .feature-card p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: rgba(43, 43, 43, 0.7);
+        }
+
+        /* Shop Page */
+        .shop-section {
+            padding: 4rem 5%;
+            background: var(--light-gray);
+            min-height: calc(100vh - 90px);
+        }
+
+        .shop-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .shop-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: var(--charcoal);
+        }
+
+        .shop-header p {
+            font-size: 1.2rem;
+            color: rgba(43, 43, 43, 0.7);
+        }
+
+        .product-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .product-image-section {
+            padding: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-gray);
+        }
+
+        .product-image-section img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .product-details {
+            padding: 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .product-details h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--charcoal);
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--orange);
+            margin-bottom: 2rem;
+        }
+
+        .product-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            color: rgba(43, 43, 43, 0.8);
+        }
+
+        .product-features-list {
+            list-style: none;
+            margin-bottom: 3rem;
+        }
+
+        .product-features-list li {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.05rem;
+        }
+
+        .product-features-list li:before {
+            content: "✓";
+            color: var(--orange);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        /* About Page */
+        .about-section {
+            padding: 4rem 5%;
+            min-height: calc(100vh - 90px);
+        }
+
+        .about-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .about-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: var(--charcoal);
+        }
+
+        .about-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .mission-box {
+            background: linear-gradient(135deg, var(--orange), var(--dark-orange));
+            color: white;
+            padding: 4rem;
+            border-radius: 30px;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .mission-box h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mission-box p {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            opacity: 0.95;
+        }
+
+        .story-box {
+            background: var(--white);
+            padding: 4rem;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .story-box h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: var(--charcoal);
+        }
+
+        .story-box p {
+            font-size: 1.15rem;
+            line-height: 1.9;
+            margin-bottom: 1.5rem;
+            color: rgba(43, 43, 43, 0.8);
+        }
+
+        /* Contact Page */
+        .contact-section {
+            padding: 4rem 5%;
+            background: var(--light-gray);
+            min-height: calc(100vh - 90px);
+        }
+
+        .contact-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .contact-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: var(--charcoal);
+        }
+
+        .team-section {
+            max-width: 1200px;
+            margin: 0 auto 5rem;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 2rem;
+        }
+
+        .team-member {
+            background: var(--white);
+            padding: 2.5rem 1.5rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s;
+        }
+
+        .team-member:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px var(--shadow);
+        }
+
+        .team-avatar {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--orange), var(--dark-orange));
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            font-weight: 700;
+        }
+
+        .team-member h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--charcoal);
+        }
+
+        .team-member p {
+            color: var(--orange);
+            font-weight: 600;
+        }
+
+        .contact-form-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 4rem;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-form-container h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: var(--charcoal);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--charcoal);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--orange);
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .btn-submit {
+            background: var(--orange);
+            color: white;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .btn-submit:hover {
+            background: var(--dark-orange);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px var(--shadow);
+        }
+
+        /* Email Popup */
+        .email-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .email-popup.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .popup-content {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 30px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            animation: slideUp 0.4s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--charcoal);
+            line-height: 1;
+        }
+
+        .popup-content h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--charcoal);
+        }
+
+        .popup-content p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            color: rgba(43, 43, 43, 0.8);
+        }
+
+        .popup-form input {
+            width: 100%;
+            padding: 1.2rem 1.5rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 1rem;
+        }
+
+        .popup-form input:focus {
+            outline: none;
+            border-color: var(--orange);
+        }
+
+        .popup-form button {
+            background: var(--orange);
+            color: white;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .popup-form button:hover {
+            background: var(--dark-orange);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--charcoal);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 3rem 5%;
+            text-align: center;
+        }
+
+        footer p {
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .home-content,
+            .product-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .home-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo" onclick="showPage('home')">
+            <span style="color: var(--charcoal); font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900;">Projecto<span style="color: var(--orange);">Chef</span></span>
+        </div>
+        <ul class="nav-links" id="navMenu">
+            <li><a href="#" onclick="showPage('home'); return false;" class="active" id="nav-home">Home</a></li>
+            <li><a href="#" onclick="showPage('shop'); return false;" id="nav-shop">Shop</a></li>
+            <li><a href="#" onclick="showPage('about'); return false;" id="nav-about">About/Mission</a></li>
+            <li><a href="#" onclick="showPage('contact'); return false;" id="nav-contact">Contact/Team</a></li>
+        </ul>
+        <div class="menu-toggle" onclick="toggleMenu()">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+    </nav>
+
+    <!-- Email Popup -->
+    <div class="email-popup" id="emailPopup">
+        <div class="popup-content">
+            <button class="popup-close" onclick="closePopup()">&times;</button>
+            <h3>Stay Updated!</h3>
+            <p>Join our mailing list to get the latest updates about Projecto Chef.</p>
+            <form class="popup-form" onsubmit="submitEmail(event)">
+                <input type="email" placeholder="Enter your email" required>
+                <button type="submit">Subscribe</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- HOME PAGE -->
+    <div class="page active" id="home">
+        <section class="home-hero">
+            <div class="home-content">
+                <div class="home-text">
+                    <h1>
+                        Cook Smarter with
+                        <span class="highlight">Projecto Chef</span>
+                    </h1>
+                    <p>Transform your kitchen counter into an interactive cooking companion. No more fumbling with cookbooks or tablets—just hands-free, mess-free recipes projected right where you need them.</p>
+                    <a href="#" onclick="showPage('shop'); return false;" class="btn-primary">Shop Now - $49.99</a>
+                </div>
+                <div class="home-image">
+                    <div style="width: 400px; height: 400px; background: linear-gradient(135deg, var(--orange), var(--dark-orange)); border-radius: 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 60px rgba(255, 140, 66, 0.3);">
+                        <div style="color: white; text-align: center;">
+                            <div style="font-size: 6rem; margin-bottom: 1rem;">📽️</div>
+                            <div style="font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 900;">Projecto<br>Chef</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <h2>Why Choose Projecto Chef?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📖</div>
+                    <h3>Hands-Free Cooking</h3>
+                    <p>Keep your hands clean while cooking. No more touching devices with messy fingers.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✨</div>
+                    <h3>HD Projection</h3>
+                    <p>Crystal-clear recipe display projected directly onto your kitchen counter.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Easy Setup</h3>
+                    <p>Simple installation and intuitive controls. Start cooking in minutes.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🗣️</div>
+                    <h3>Voice Control</h3>
+                    <p>Navigate recipes with simple voice commands while you cook.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">☁️</div>
+                    <h3>Cloud Recipes</h3>
+                    <p>Access thousands of recipes or upload your own favorites.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⏱️</div>
+                    <h3>Built-in Timers</h3>
+                    <p>Smart timers keep you on track for perfectly cooked meals.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- SHOP PAGE -->
+    <div class="page" id="shop">
+        <section class="shop-section">
+            <div class="shop-header">
+                <h1>Get Your Projecto Chef</h1>
+                <p>The smart solution for hands-free cooking</p>
+            </div>
+            <div class="product-container">
+                <div class="product-image-section">
+                    <div style="width: 350px; height: 350px; background: linear-gradient(135deg, var(--orange), var(--dark-orange)); border-radius: 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 60px rgba(255, 140, 66, 0.3);">
+                        <div style="color: white; text-align: center;">
+                            <div style="font-size: 5rem; margin-bottom: 1rem;">📽️</div>
+                            <div style="font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900;">Projecto<br>Chef</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-details">
+                    <h2>Projecto Chef</h2>
+                    <div class="price">$49.99</div>
+                    <p class="product-description">The ultimate cookbook projector designed to make your cooking experience easier and more enjoyable. Project recipes directly onto your counter for true hands-free cooking.</p>
+                    <ul class="product-features-list">
+                        <li>HD Recipe Projection</li>
+                        <li>Hands-Free Operation</li>
+                        <li>Voice Control Ready</li>
+                        <li>Adjustable Projection Size</li>
+                        <li>Easy Counter Setup</li>
+                        <li>Cloud Recipe Library Access</li>
+                        <li>Built-in Smart Timers</li>
+                        <li>Compatible with All Recipes</li>
+                    </ul>
+                    <button class="btn-primary" onclick="buyNow()">Buy Now</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ABOUT PAGE -->
+    <div class="page" id="about">
+        <section class="about-section">
+            <div class="about-header">
+                <h1>Our Mission</h1>
+                <p>Making cooking easier, one projection at a time</p>
+            </div>
+            <div class="about-content">
+                <div class="mission-box">
+                    <h2>Why We Built Projecto Chef</h2>
+                    <p>Our mission is to make cooking easier and more accessible for everyone. We believe that traditional cookbooks and messy tablets shouldn't hold you back from creating amazing meals in your kitchen.</p>
+                </div>
+                <div class="story-box">
+                    <h2>Our Story</h2>
+                    <p>We're a group of juniors in high school who love cooking but were constantly frustrated with the challenges of following recipes in the kitchen. Physical cookbooks get dirty and take up counter space, tablets are impossible to navigate with messy hands, and phone screens are just too small to read comfortably while cooking.</p>
+                    <p>One day, while struggling to follow a recipe covered in flour, we had a lightbulb moment: what if we could project recipes directly onto the kitchen counter? No more switching between your hands and your device. No more squinting at tiny text. Just clear, hands-free recipe instructions exactly where you need them.</p>
+                    <p>After months of brainstorming, prototyping, and testing in our own kitchens, Projecto Chef was born. We're incredibly proud to bring this innovation to home cooks everywhere, making the cooking experience smoother, cleaner, and more enjoyable.</p>
+                    <p>As high school students passionate about technology and entrepreneurship, we're excited to solve real-world problems. Projecto Chef represents our commitment to innovation and our belief that great ideas can come from anywhere—even from a messy kitchen!</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- CONTACT PAGE -->
+    <div class="page" id="contact">
+        <section class="contact-section">
+            <div class="contact-header">
+                <h1>Meet Our Team</h1>
+                <p>The innovators behind Projecto Chef</p>
+            </div>
+            <div class="team-section">
+                <div class="team-grid">
+                    <div class="team-member">
+                        <div class="team-avatar">W</div>
+                        <h3>Will</h3>
+                        <p>Co-Founder</p>
+                    </div>
+                    <div class="team-member">
+                        <div class="team-avatar">J</div>
+                        <h3>JP</h3>
+                        <p>Co-Founder</p>
+                    </div>
+                    <div class="team-member">
+                        <div class="team-avatar">N</div>
+                        <h3>Noah</h3>
+                        <p>Co-Founder</p>
+                    </div>
+                    <div class="team-member">
+                        <div class="team-avatar">C</div>
+                        <h3>Chris</h3>
+                        <p>Co-Founder</p>
+                    </div>
+                    <div class="team-member">
+                        <div class="team-avatar">C</div>
+                        <h3>Clark</h3>
+                        <p>Co-Founder</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="contact-form-container">
+                <h2>Get in Touch</h2>
+                <form onsubmit="submitContact(event)">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit">Send Message</button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>Projecto<span style="color: var(--orange);">Chef</span></strong></p>
+        <p>Making cooking easier with smart projection technology.</p>
+        <p>Created by high school students passionate about innovation.</p>
+        <p style="margin-top: 1.5rem;">&copy; 2026 Projecto Chef. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Page Navigation
+        function showPage(pageName) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // Show selected page
+            document.getElementById(pageName).classList.add('active');
+            
+            // Update active nav link
+            const navLinks = document.querySelectorAll('.nav-links a');
+            navLinks.forEach(link => link.classList.remove('active'));
+            document.getElementById('nav-' + pageName).classList.add('active');
+            
+            // Close mobile menu if open
+            document.getElementById('navMenu').classList.remove('active');
+            
+            // Scroll to top
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        // Toggle mobile menu
+        function toggleMenu() {
+            document.getElementById('navMenu').classList.toggle('active');
+        }
+
+        // Make sure home page is shown on load
+        window.addEventListener('DOMContentLoaded', function() {
+            showPage('home');
+        });
+
+        // Email Popup - Show after 15 seconds
+        setTimeout(() => {
+            document.getElementById('emailPopup').classList.add('show');
+        }, 15000);
+
+        function closePopup() {
+            document.getElementById('emailPopup').classList.remove('show');
+        }
+
+        function submitEmail(event) {
+            event.preventDefault();
+            alert('Thank you for subscribing! We\'ll keep you updated on Projecto Chef.');
+            closePopup();
+        }
+
+        function submitContact(event) {
+            event.preventDefault();
+            alert('Thank you for your message! We\'ll get back to you soon.');
+            event.target.reset();
+        }
+
+        function buyNow() {
+            alert('Thank you for your interest in Projecto Chef! Please contact us to complete your purchase:\n\nPrice: $49.99\n\nWe\'ll be in touch shortly!');
+        }
+
+        // Close popup when clicking outside
+        document.getElementById('emailPopup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePopup();
+            }
+        });
+    </script>
+</body>
+</html>
